@@ -11,6 +11,7 @@ OUTPUT:
 INPUT: file of tokens.
 OUTPUT:
         1- Parse Tree
+        
                 [READ][x]
                 [if]
                    [oper][LESS_THAN]
