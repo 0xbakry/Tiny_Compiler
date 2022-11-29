@@ -8,8 +8,8 @@ OUTPUT:
         3- The number of the line in which it appeared.                                                                                                                   
     
 # Complier_Parser
-INPUT: file of tokens.
-OUTPUT:
+INPUT: file of tokens.                                                                                                                                                  
+OUTPUT:                                                                                                                                                                         
         1- Parse Tree
         
                 [READ][x]
