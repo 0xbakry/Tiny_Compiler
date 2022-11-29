@@ -29,7 +29,7 @@ OUTPUT:
                       [Oper][MINUS]
                          [ID][x]
                          [NUM][1]
-                [ASSIGN][x]
+                   [ASSIGN][x]
                    [Oper][SEMI_COLON]
                       [NUM][0]
                       [WRITE][write]
