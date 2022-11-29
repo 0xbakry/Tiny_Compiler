@@ -1,4 +1,4 @@
-# Complier_Scanner
+# Compiler_Scanner
 Compiler scanner to extract tokens from source codes 
 
 INPUT: Source code.                                                                                                                                                       
@@ -7,7 +7,7 @@ OUTPUT:
         2- The token (ex: IF, IDENTIFIER, NUM, etc..).                                                                                                                  
         3- The number of the line in which it appeared.                                                                                                                   
     
-# Complier_Parser
+# Compiler_Parser
 INPUT: file of tokens.                                                                                                                                                  
 OUTPUT:                                                                                                                                                                         
         1- Parse Tree
