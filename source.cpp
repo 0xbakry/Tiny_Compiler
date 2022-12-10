@@ -90,9 +90,8 @@ struct TreeNode
 		int i; for (i = 0; i < MAX_CHILDREN; i++)
 			child[i] = 0; sibling = 0;
 	}
-	
-};
 
+};
 void PrintTree(TreeNode* node, int sh = 0)
 {
 	int i, NSH = 3;
@@ -102,22 +101,22 @@ void PrintTree(TreeNode* node, int sh = 0)
 
 	//printf("[%s][%s]", node->type, node->id);
 	if (node->type != "")
-		cout << "[" << node->type<< "]";
-	if(node->id != "")
-	cout << "[" << node->id << "]";
-	
+		cout << "[" << node->type << "]";
+	if (node->id != "")
+		cout << "[" << node->id << "]";
+
 	cout << endl;
 
 	for (i = 0; i < node->children; i++) if (node->child[i]) PrintTree(node->child[i], sh + NSH);
 	if (node->sibling) PrintTree(node->sibling, sh);
 }
 /********************* FUN DEFINTIONS ************************/
-TreeNode* parseStatment(vector<string>& tokens, int &index);
+TreeNode* parseStatment(vector<string>& tokens, int& index);
 TreeNode* parsConditionn(vector<string>& tokens, int start, int end);
 TreeNode* parseOper(vector<string>& tokens, int start, int end);
-TreeNode* parseAssign(vector<string>& tokens, int &start);
-TreeNode* parseBody(vector<string>& tokens, int &index);
-TreeNode* parseIf(vector<string>& tokens, int &index);
+TreeNode* parseAssign(vector<string>& tokens, int& start);
+TreeNode* parseBody(vector<string>& tokens, int& index);
+TreeNode* parseIf(vector<string>& tokens, int& index);
 TreeNode* parseRepeat(vector<string>& tokens, int& index);
 /*************************************************************/
 
@@ -131,23 +130,23 @@ TreeNode* parseRepeat(vector<string>& tokens, int& index)
 	TreeNode* currentNode = new TreeNode();
 
 	currentNode->type = "Repeat";
-	currentNode->child[0] = parseBody(tokens, index);
+	currentNode->child[1] = parseBody(tokens, index);
 	index++;
-	currentNode->child[1] = parsConditionn(tokens, index, index+3);
+	currentNode->child[0] = parsConditionn(tokens, index, index + 3);
 	currentNode->children += 2;
 	return currentNode;
 }
-
-TreeNode* parseStatment(vector<string>& tokens, int &index)
+TreeNode* parseStatment(vector<string>& tokens, int& index)
 {
 	TreeNode* newNode = new TreeNode();
-	
+
 	if (tokens[index].substr((tokens[index].find(",")) + 1) == "SEMI_COLON")
 		index++;
 
 	if (!notTermenal(tokens[index].substr(0, tokens[index].find_first_of(","))))
 	{
 		newNode = parseAssign(tokens, index);
+	
 	}
 	else
 		if (tokens[index].substr(0, tokens[index].find(",")) == "read" || tokens[index].substr(0, tokens[index].find(",")) == "write")
@@ -155,6 +154,7 @@ TreeNode* parseStatment(vector<string>& tokens, int &index)
 			newNode->type = tokens[index].substr(tokens[index].find_first_of(",") + 1);
 			index++;
 			newNode->id = tokens[index].substr(0, tokens[index].find_first_of(","));
+			index++;
 
 		}
 		else if (tokens[index].substr(0, tokens[index].find(",")) == "if")
@@ -168,6 +168,7 @@ TreeNode* parseStatment(vector<string>& tokens, int &index)
 		{
 			index++;
 			newNode = parseRepeat(tokens, index);
+			index += 4;
 		}
 	return newNode;
 }
@@ -175,12 +176,12 @@ TreeNode* parsConditionn(vector<string>& tokens, int start, int end)
 {
 	TreeNode* condition = new TreeNode();
 	condition->type = "oper";
-	condition->id = tokens[start + 1].substr(tokens[start+1].find_first_of(",") + 1);
+	condition->id = tokens[start + 1].substr(tokens[start + 1].find_first_of(",") + 1);
 
-	for (int j = 0; j < (end-start-1); j++)
+	for (int j = 0; j < (end - start - 1); j++)
 	{
 		TreeNode* _child = new TreeNode();
-		_child->type = tokens[start +(2*j)].substr(tokens[start +(2*j)].find_first_of(",") + 1);
+		_child->type = tokens[start + (2 * j)].substr(tokens[start + (2 * j)].find_first_of(",") + 1);
 		_child->id = tokens[start + (2 * j)].substr(0, tokens[start + (2 * j)].find_first_of(","));
 		condition->child[j] = _child;
 		condition->children++;
@@ -192,7 +193,7 @@ TreeNode* parseOper(vector<string>& tokens, int start, int end)
 {
 	TreeNode* oper = new TreeNode();
 	oper->type = "Oper";
-	oper->id = tokens[start+1].substr(tokens[start+1].find(",")+1);
+	oper->id = tokens[start + 1].substr(tokens[start + 1].find(",") + 1);
 	for (int j = 0; j < 2; j++)
 	{
 		TreeNode* _child = new TreeNode();
@@ -215,6 +216,16 @@ TreeNode* parseAssign(vector<string>& tokens, int& start)
 	int end = start;
 	while (tokens[end].substr((tokens[end].find(",")) + 1) != "SEMI_COLON" && !notTermenal(tokens[end].substr(0, tokens[end].find(","))))
 		end++;
+	if (end - start == 1)
+	{
+		newNode->type = tokens[start].substr(tokens[start].find(",") + 1);
+		newNode->id = tokens[start].substr(0, tokens[start].find(","));
+		root->child[child] = newNode; child++;
+		currentNode->sibling = newNode;
+		currentNode = newNode;
+		start += 2;
+		root->children = child;
+	}
 	while (start < end)
 	{
 		newNode = parseOper(tokens, start, end);
@@ -226,17 +237,17 @@ TreeNode* parseAssign(vector<string>& tokens, int& start)
 	}
 	return root;
 }
-TreeNode* parseBody(vector<string>& tokens, int &index)
+TreeNode* parseBody(vector<string>& tokens, int& index)
 {
 	int start = index;
 	bool endBlock = false;
 	TreeNode* newNode = new TreeNode();
 	TreeNode* currentNode = new TreeNode();
 	TreeNode* root = new TreeNode();
-	 root = currentNode;
-	while(tokens[index].substr((tokens[index].find(",")) + 1) != "END" &&
-		 tokens[index].substr((tokens[index].find(",")) + 1) != "ELSE" &&
-		 tokens[index].substr((tokens[index].find(",")) + 1) != "UNTIL")
+	root = currentNode;
+	while (tokens[index].substr((tokens[index].find(",")) + 1) != "END" &&
+		tokens[index].substr((tokens[index].find(",")) + 1) != "ELSE" &&
+		tokens[index].substr((tokens[index].find(",")) + 1) != "UNTIL")
 	{
 		newNode = parseStatment(tokens, index);
 		if (endBlock)
@@ -255,14 +266,14 @@ TreeNode* parseBody(vector<string>& tokens, int &index)
 	}
 	return root;
 }
-TreeNode* parseIf(vector<string> &tokens, int &index)
+TreeNode* parseIf(vector<string>& tokens, int& index)
 {
 
 	TreeNode* newNode = new TreeNode();
 	TreeNode* currentNode = new TreeNode();
 
 	currentNode->type = "if";
-	currentNode->child[0] = parsConditionn(tokens, index, index+3);
+	currentNode->child[0] = parsConditionn(tokens, index, index + 3);
 	index += 3;
 	int children = 1;
 
@@ -271,7 +282,7 @@ TreeNode* parseIf(vector<string> &tokens, int &index)
 		index++;
 		currentNode->child[children] = parseBody(tokens, index);
 		children++;
-		 
+
 	}
 	else
 		cout << "Exception!! THEN stmt is missing!" << '\n';
@@ -285,7 +296,7 @@ TreeNode* parseIf(vector<string> &tokens, int &index)
 	}
 	//else if (tokens[index].substr(0, tokens[index].find(",")) == "end")
 	//	return currentNode;
-	
+
 	currentNode->children = children;
 	return currentNode;
 
@@ -481,7 +492,7 @@ int main() {
 	for (int i = 0; i < parsLines.size(); i++)
 	{
 		TreeNode* newNode = new TreeNode();
-		 
+
 		if (parsLines[i].substr(parsLines[i].find_first_of(",") + 1) != "SEMI_COLON")
 		{
 			newNode = parseStatment(parsLines, i);
@@ -493,9 +504,9 @@ int main() {
 	}
 	PrintTree(root, 0);
 }
-		
-		
-	
+
+
+
 
 
 
